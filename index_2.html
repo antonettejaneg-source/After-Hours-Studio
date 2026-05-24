@@ -157,7 +157,7 @@ button{font-family:'Inter',sans-serif !important}
 .l-h1,.l-section-title,.l-stat-num{font-family:'Syne','Work Sans',sans-serif !important}
 
 /* ── LANDING ──────────────────────────────────────── */
-#landing{display:none}
+#landing{display:block}
 #app{display:none}
 
 /* ─── NAVBAR ─── */
@@ -2697,9 +2697,19 @@ function backToLanding(){
   window.scrollTo(0,0);
 }
 function goToDashboard(){
-  document.getElementById('landing').style.display='none';
-  document.getElementById('app').style.display='block';
-  window.scrollTo(0,0);
+  // If already logged in, go straight to dashboard
+  if(currentUser){
+    document.getElementById('landing').style.display='none';
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    window.scrollTo(0,0);
+  } else {
+    // Show login screen first
+    document.getElementById('landing').style.display='none';
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('app').style.display='none';
+    window.scrollTo(0,0);
+  }
 }
 // Listen for postMessage from landing iframe
 window.addEventListener('message', function(e){
@@ -5196,11 +5206,12 @@ window.deleteTrade = async function(id) {
 (async () => {
   const { data: { session } } = await sb.auth.getSession();
   if (!session) {
-    // Show auth screen, hide everything else
-    document.getElementById('auth-screen').style.display = 'flex';
-    document.getElementById('landing').style.display = 'none';
+    // Show landing page first
+    document.getElementById('landing').style.display = 'block';
+    document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app').style.display = 'none';
   }
+  // If session exists, onAuthStateChange will handle showing the dashboard
 })();
 </script>
 
