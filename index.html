@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Sora:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script id="tailwind-config">
   tailwind.config = {
     darkMode: "class",
@@ -156,7 +157,7 @@ button{font-family:'Inter',sans-serif !important}
 .l-h1,.l-section-title,.l-stat-num{font-family:'Syne','Work Sans',sans-serif !important}
 
 /* ── LANDING ──────────────────────────────────────── */
-#landing{display:block}
+#landing{display:none}
 #app{display:none}
 
 /* ─── NAVBAR ─── */
@@ -872,6 +873,46 @@ select.input-field {
 <!-- ═══════════════════════════════════════════════════════ -->
 <!--  LANDING PAGE (iframe — fully isolated)                -->
 <!-- ═══════════════════════════════════════════════════════ -->
+<!-- ── AUTH SCREEN ─────────────────────────────────── -->
+<div id="auth-screen" style="display:flex;min-height:100vh;background:#0b0e14;align-items:center;justify-content:center;flex-direction:column;padding:24px;">
+  <div style="width:100%;max-width:420px;background:rgba(22,27,34,0.8);border:1px solid rgba(255,255,255,0.07);border-top-color:rgba(255,255,255,0.14);border-radius:20px;padding:40px;backdrop-filter:blur(12px)">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="width:52px;height:52px;background:#00ff41;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+        <span class="material-symbols-outlined" style="color:#003907;font-size:28px">candlestick_chart</span>
+      </div>
+      <h1 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#e1e2eb;letter-spacing:-0.02em;margin-bottom:4px">After Hours Studio</h1>
+      <p style="font-size:12px;color:#84967e;font-weight:500">Forex &amp; Gold Trading Journal</p>
+    </div>
+    <div style="display:flex;gap:4px;background:rgba(0,0,0,0.3);border-radius:10px;padding:4px;margin-bottom:24px">
+      <button onclick="switchAuthTab('login')" id="tab-login" style="flex:1;padding:8px;border-radius:7px;border:none;background:#00ff41;color:#003907;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s">Sign In</button>
+      <button onclick="switchAuthTab('signup')" id="tab-signup" style="flex:1;padding:8px;border-radius:7px;border:none;background:transparent;color:#b9ccb2;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s">Sign Up</button>
+    </div>
+    <div id="auth-msg" style="display:none;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:16px;text-align:center"></div>
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:10px;font-weight:700;color:#84967e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Email</label>
+      <input id="auth-email" type="email" placeholder="your@email.com" style="width:100%;padding:11px 14px;background:#10131a;border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:#e1e2eb;font-size:14px;outline:none;font-family:'Inter',sans-serif;transition:border-color .15s"
+        onfocus="this.style.borderColor='#00ff41'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'" onkeydown="if(event.key==='Enter')authSubmit()">
+    </div>
+    <div style="margin-bottom:24px">
+      <label style="display:block;font-size:10px;font-weight:700;color:#84967e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Password</label>
+      <input id="auth-password" type="password" placeholder="••••••••" style="width:100%;padding:11px 14px;background:#10131a;border:1px solid rgba(255,255,255,0.08);border-radius:9px;color:#e1e2eb;font-size:14px;outline:none;font-family:'Inter',sans-serif;transition:border-color .15s"
+        onfocus="this.style.borderColor='#00ff41'" onblur="this.style.borderColor='rgba(255,255,255,0.08)'" onkeydown="if(event.key==='Enter')authSubmit()">
+    </div>
+    <button onclick="authSubmit()" id="auth-btn" style="width:100%;padding:13px;background:#00ff41;border:none;border-radius:10px;color:#003907;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;letter-spacing:.01em">Sign In</button>
+    <div style="display:flex;align-items:center;gap:10px;margin:20px 0">
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.06)"></div>
+      <span style="font-size:10px;color:#84967e;font-weight:600">OR</span>
+      <div style="flex:1;height:1px;background:rgba(255,255,255,0.06)"></div>
+    </div>
+    <button onclick="authGoogle()" style="width:100%;padding:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#e1e2eb;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'Inter',sans-serif"
+      onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'">
+      <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+  <p style="margin-top:20px;font-size:11px;color:rgba(185,204,178,0.3);text-align:center">Your trades are private and synced across devices.</p>
+</div>
+
 <div id="landing">
 <iframe id="landing-frame" srcdoc="&lt;!DOCTYPE html&gt;
 
@@ -1791,11 +1832,14 @@ select.input-field {
     </div>
     <div class="flex items-center gap-sm pl-md" style="border-left:1px solid rgba(255,255,255,0.08);">
       <div class="text-right">
-        <p class="font-label-md text-label-md text-on-surface font-bold">Trader</p>
+        <p class="font-label-md text-label-md text-on-surface font-bold" id="topbar-user">Trader</p>
         <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter">Pro Account</p>
       </div>
       <div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold"
            style="background:#002444;color:#fff;border:1.5px solid rgba(0,255,65,0.35);">TR</div>
+      <button onclick="signOut()" title="Sign Out" style="padding:6px 10px;border-radius:8px;border:1px solid rgba(255,75,75,0.2);background:rgba(255,75,75,0.08);color:#ffb4ab;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .15s" onmouseover="this.style.background='rgba(255,75,75,0.15)'" onmouseout="this.style.background='rgba(255,75,75,0.08)'">
+        <span class="material-symbols-outlined" style="font-size:14px">logout</span>
+      </button>
     </div>
   </div>
 </header>
@@ -4855,5 +4899,310 @@ document.addEventListener('mouseout', function(e){
 });
 </script>
 </div><!-- /#app -->
+
+<script>
+// ── SUPABASE INIT ────────────────────────────────────
+const SUPABASE_URL = 'https://ctmilmieqjfjuivgijwk.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_UaW9e2qVjiL5LX9s8hySSg_GV6gHBM5';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+let authMode = 'login';
+
+// ── AUTH UI ──────────────────────────────────────────
+function switchAuthTab(mode) {
+  authMode = mode;
+  const isLogin = mode === 'login';
+  document.getElementById('tab-login').style.cssText = 'flex:1;padding:8px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;background:' + (isLogin ? '#00ff41' : 'transparent') + ';color:' + (isLogin ? '#003907' : '#b9ccb2');
+  document.getElementById('tab-signup').style.cssText = 'flex:1;padding:8px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;background:' + (!isLogin ? '#00ff41' : 'transparent') + ';color:' + (!isLogin ? '#003907' : '#b9ccb2');
+  document.getElementById('auth-btn').textContent = isLogin ? 'Sign In' : 'Create Account';
+  hideAuthMsg();
+}
+
+function showAuthMsg(msg, isError) {
+  const el = document.getElementById('auth-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+  el.style.background = isError ? 'rgba(255,75,75,0.1)' : 'rgba(0,255,65,0.1)';
+  el.style.color = isError ? '#ffb4ab' : '#00e639';
+  el.style.border = '1px solid ' + (isError ? 'rgba(255,75,75,0.2)' : 'rgba(0,255,65,0.2)');
+}
+
+function hideAuthMsg() {
+  document.getElementById('auth-msg').style.display = 'none';
+}
+
+function setAuthLoading(loading) {
+  const btn = document.getElementById('auth-btn');
+  btn.disabled = loading;
+  btn.style.opacity = loading ? '0.6' : '1';
+  btn.textContent = loading ? 'Please wait…' : (authMode === 'login' ? 'Sign In' : 'Create Account');
+}
+
+async function authSubmit() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if (!email || !password) { showAuthMsg('Please fill in both fields.', true); return; }
+  setAuthLoading(true);
+  hideAuthMsg();
+  try {
+    let result;
+    if (authMode === 'login') {
+      result = await sb.auth.signInWithPassword({ email, password });
+    } else {
+      result = await sb.auth.signUp({ email, password });
+    }
+    if (result.error) throw result.error;
+    if (authMode === 'signup') {
+      showAuthMsg('Account created! Check your email to confirm, then sign in.', false);
+    }
+    // onAuthStateChange will handle the redirect
+  } catch (err) {
+    showAuthMsg(err.message || 'Something went wrong.', true);
+  } finally {
+    setAuthLoading(false);
+  }
+}
+
+async function authGoogle() {
+  hideAuthMsg();
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showAuthMsg(error.message, true);
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  currentUser = null;
+  trades = [];
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('landing').style.display = 'none';
+}
+
+// ── AUTH STATE LISTENER ──────────────────────────────
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session && session.user) {
+    currentUser = session.user;
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    // Show user email in topbar
+    const userEl = document.getElementById('topbar-user');
+    if (userEl) userEl.textContent = session.user.email;
+    // Load trades from Supabase
+    await loadTradesFromDB();
+    renderAll();
+    fetchRate();
+  } else {
+    currentUser = null;
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('landing').style.display = 'none';
+  }
+});
+
+// ── SUPABASE TRADE CRUD ──────────────────────────────
+async function loadTradesFromDB() {
+  if (!currentUser) return;
+  try {
+    const { data, error } = await sb.from('trades')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    trades = (data || []).map(row => ({
+      id: row.id,
+      _dbId: row.id,
+      date: row.date,
+      pair: row.pair,
+      dir: row.direction,
+      session: row.session,
+      result: row.result,
+      entry: row.entry,
+      exit: row.exit,
+      lot: row.lot_size,
+      pnl: row.pnl,
+      rr: row.rr,
+      notes: row.notes,
+      planFollowed: row.plan_followed,
+      confluences: row.confluences || [],
+      mistakes: row.mistakes || [],
+      entryEmo: row.entry_emotion,
+      exitEmo: row.exit_emotion,
+      photos: row.image_urls || [],
+      score: row.score,
+      grade: row.grade,
+      wt: row.wt,
+    }));
+  } catch (e) {
+    console.error('Error loading trades:', e);
+  }
+}
+
+async function saveTradeToDb(trade) {
+  if (!currentUser) return null;
+  try {
+    const { data, error } = await sb.from('trades').insert([{
+      user_id: currentUser.id,
+      date: trade.date,
+      pair: trade.pair,
+      direction: trade.dir,
+      session: trade.session,
+      result: trade.result,
+      entry: trade.entry || null,
+      exit: trade.exit || null,
+      lot_size: trade.lot || null,
+      pnl: trade.pnl,
+      rr: trade.rr,
+      notes: trade.notes,
+      plan_followed: trade.planFollowed,
+      confluences: trade.confluences,
+      mistakes: trade.mistakes,
+      entry_emotion: trade.entryEmo,
+      exit_emotion: trade.exitEmo,
+      image_urls: trade.photos,
+      score: trade.score,
+      grade: trade.grade,
+      wt: trade.wt,
+    }]).select().single();
+    if (error) throw error;
+    return data;
+  } catch (e) {
+    console.error('Error saving trade:', e);
+    return null;
+  }
+}
+
+async function deleteTradeFromDb(dbId) {
+  if (!currentUser || !dbId) return;
+  try {
+    const { error } = await sb.from('trades').delete().eq('id', dbId).eq('user_id', currentUser.id);
+    if (error) throw error;
+  } catch (e) {
+    console.error('Error deleting trade:', e);
+  }
+}
+
+// ── UPLOAD IMAGE TO SUPABASE STORAGE ────────────────
+async function uploadImageToStorage(dataUrl, tradeId) {
+  if (!currentUser) return dataUrl;
+  try {
+    // Convert base64 to blob
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const ext = blob.type.split('/')[1] || 'jpg';
+    const path = currentUser.id + '/' + tradeId + '_' + Date.now() + '.' + ext;
+    const { error } = await sb.storage.from('trade-images').upload(path, blob, { upsert: true });
+    if (error) throw error;
+    const { data } = sb.storage.from('trade-images').getPublicUrl(path);
+    return data.publicUrl;
+  } catch (e) {
+    console.error('Image upload error:', e);
+    return dataUrl; // fallback to base64
+  }
+}
+
+// ── PATCH addTrade TO SAVE TO SUPABASE ───────────────
+const _origAddTrade = addTrade;
+window.addTrade = async function() {
+  if (_logTrading) return;
+  _logTrading = true;
+  const btn = document.querySelector('[onclick="addTrade()"]');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
+
+  const date = document.getElementById('f-date').value;
+  const pair = document.getElementById('f-pair').value;
+  const session = document.getElementById('f-session').value;
+  const dir = tradeDir || 'Buy';
+  const result = document.getElementById('f-result').value;
+  const entry = parseFloat(document.getElementById('f-entry').value);
+  const exit = parseFloat(document.getElementById('f-exit').value);
+  const lot = parseFloat(document.getElementById('f-lot').value);
+  const mp = document.getElementById('f-pnl').value;
+  const notes = document.getElementById('f-notes').value.trim();
+  const planFollowed = document.getElementById('f-plan-check') ? document.getElementById('f-plan-check').checked : false;
+  const confluences = [...selectedConfluences];
+  const mistakes = [...selectedMistakes];
+  const entryEmo = entryEmotion;
+  const exitEmo = exitEmotion;
+  const rrRaw = document.getElementById('f-rr').value.trim();
+  let rrVal = null;
+  if (rrRaw) {
+    const parts = rrRaw.split(':').map(s => parseFloat(s.trim()));
+    if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1]) && parts[0] > 0) rrVal = parseFloat((parts[1] / parts[0]).toFixed(2));
+    else if (parts.length === 1 && !isNaN(parts[0])) rrVal = parseFloat(parts[0].toFixed(2));
+  }
+  if (!date || !pair) {
+    alert('Fill in date and pair.');
+    _logTrading = false;
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.pointerEvents = ''; }
+    return;
+  }
+  let pnl = null;
+  if (mp !== '') { pnl = parseFloat(mp); }
+  else if (!isNaN(entry) && !isNaN(exit) && !isNaN(lot)) {
+    const d = dir === 'Buy' ? exit - entry : entry - exit;
+    if (pair.includes('JPY')) pnl = parseFloat((d * lot * 1000).toFixed(2));
+    else if (pair.includes('XAU') || pair.includes('Gold')) pnl = parseFloat((d * lot * 100).toFixed(2));
+    else pnl = parseFloat((d * lot * 100000).toFixed(2));
+  }
+  const score = Object.values(rVals).reduce((a, b) => a + b, 0);
+  let grade = '';
+  if (score >= 16) grade = 'A'; else if (score >= 11) grade = 'B'; else if (score >= 6) grade = 'C'; else if (score >= 4) grade = 'D';
+
+  const tempId = Date.now();
+  const trade = { date, pair, dir, session, result, entry, exit, lot, pnl, rr: rrVal, notes, planFollowed, confluences, mistakes, entryEmo, exitEmo, photos: [...pending], score, grade, wt: wtChoice_, id: tempId };
+
+  // Upload images if logged in
+  if (currentUser && trade.photos.length > 0) {
+    trade.photos = await Promise.all(trade.photos.map(p => uploadImageToStorage(p, tempId)));
+  }
+
+  // Save to Supabase
+  if (currentUser) {
+    const saved = await saveTradeToDb(trade);
+    if (saved) { trade._dbId = saved.id; trade.id = saved.id; }
+  }
+
+  trades.unshift(trade);
+  fullFormReset();
+  updPairF();
+  renderStats();
+  showView('tradelog', document.querySelectorAll('#v16-nav a')[1]);
+
+  setTimeout(() => {
+    _logTrading = false;
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.pointerEvents = ''; }
+  }, 800);
+};
+
+// ── PATCH deleteTrade TO ALSO DELETE FROM DB ─────────
+const _origDeleteTrade = window.deleteTrade;
+window.deleteTrade = async function(id) {
+  const trade = trades.find(t => t.id === id);
+  if (trade && trade._dbId && currentUser) {
+    await deleteTradeFromDb(trade._dbId);
+  }
+  trades = trades.filter(t => t.id !== id);
+  updPairF();
+  renderAll();
+};
+
+// ── CHECK SESSION ON LOAD ────────────────────────────
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    // Show auth screen, hide everything else
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
+  }
+})();
+</script>
+
 </body>
 </html>
