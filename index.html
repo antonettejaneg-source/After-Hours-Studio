@@ -4000,7 +4000,15 @@ function initReview(){
 }
 
 // ── INIT ─────────────────────────────────────────────
-buildRubric();renderStats();renderCl();renderOverview();initReview();
+// Safe init — only run when app section is visible
+function safeInit(){
+  try { buildRubric(); } catch(e){}
+  try { renderStats(); } catch(e){}
+  try { renderCl(); } catch(e){}
+  try { renderOverview(); } catch(e){}
+  try { initReview(); } catch(e){}
+}
+// Don't run on page load — wait until user is logged in
 // Quote footer init — show briefly on load so user knows it exists
 showQuote();
 startQTimer();
@@ -5027,6 +5035,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
     if (userEl) userEl.textContent = session.user.email;
     // Load trades from Supabase
     await loadTradesFromDB();
+    safeInit();
     renderAll();
     fetchRate();
   } else {
