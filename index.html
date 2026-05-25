@@ -3957,14 +3957,15 @@ let entryEmotion = '';
 let exitEmotion = '';
 
 function renderEmotions(){
-  document.getElementById('entry-emotion-group').innerHTML = EMOTIONS.map(em =>
+  const entryGroup = document.getElementById('entry-emotion-group');
+  const exitGroup = document.getElementById('exit-emotion-group');
+  if(entryGroup) entryGroup.innerHTML = EMOTIONS.map(em =>
     `<button type="button" title="${em.l}" onclick="setEmotion('entry','${em.l}')" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border-radius:8px;border:1px solid ${entryEmotion===em.l?'rgba(0,255,65,0.4)':'rgba(255,255,255,0.07)'};background:${entryEmotion===em.l?'rgba(0,255,65,0.08)':'#1d2026'};cursor:pointer;transition:all .15s;min-width:40px">
       <span style="font-size:18px">${em.e}</span>
       <span style="font-size:9px;font-weight:600;color:${entryEmotion===em.l?'#00e639':'#b9ccb2'}">${em.l}</span>
     </button>`
   ).join('');
-
-  document.getElementById('exit-emotion-group').innerHTML = EMOTIONS.map(em =>
+  if(exitGroup) exitGroup.innerHTML = EMOTIONS.map(em =>
     `<button type="button" title="${em.l}" onclick="setEmotion('exit','${em.l}')" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border-radius:8px;border:1px solid ${exitEmotion===em.l?'#00e639':'rgba(255,255,255,0.1)'};background:${exitEmotion===em.l?'rgba(0,255,65,0.06)':'#1d2026'};cursor:pointer;transition:all .15s;min-width:40px">
       <span style="font-size:18px">${em.e}</span>
       <span style="font-size:9px;font-weight:600;color:${exitEmotion===em.l?'#00e639':'#b9ccb2'}">${em.l}</span>
@@ -5212,15 +5213,13 @@ window.addTrade = async function() {
   }
 
   trades.unshift(trade);
-  fullFormReset();
-  updPairF();
-  renderStats();
-  showView('tradelog', document.querySelectorAll('#v16-nav a')[1]);
+  try { fullFormReset(); } catch(e) { console.warn('Form reset error:', e); }
+  try { updPairF(); } catch(e) {}
+  try { renderStats(); } catch(e) {}
+  try { showView('tradelog', document.querySelectorAll('#v16-nav a')[1]); } catch(e) {}
 
-  setTimeout(() => {
-    _logTrading = false;
-    if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.pointerEvents = ''; }
-  }, 800);
+  _logTrading = false;
+  if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.style.pointerEvents = ''; }
 };
 
 // ── PATCH deleteTrade TO ALSO DELETE FROM DB ─────────
