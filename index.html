@@ -4983,7 +4983,7 @@ async function signOut() {
   document.getElementById('app').style.display = 'none';
   document.getElementById('landing').style.display = 'block';
   window.scrollTo(0,0);
-  try { sb.auth.signOut(); } catch(e) {}
+  try { await sb.auth.signOut(); } catch(e) {}
 }
 
 // ── AUTH STATE LISTENER ──────────────────────────────
